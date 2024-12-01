@@ -83,7 +83,7 @@ $fullName = $user['full_name'];
                     <!-- Hiance Option -->
                     <div class="col-md-6">
                         <div class="bus-card">
-                            <img src="../img/hiance.png" alt="Toyota Hiance" class="bus-image">
+                            <img src="../img/jet_mover.jpg" alt="Toyota Hiance" class="bus-image">
                             <div class="bus-details">
                                 <h4>Toyota Hiance</h4>
                                 <div class="departure-time">
@@ -102,7 +102,7 @@ $fullName = $user['full_name'];
                     <!-- Jet Mover Option -->
                     <div class="col-md-6">
                         <div class="bus-card">
-                            <img src="../img/jet_mover.png" alt="Jet Mover" class="bus-image">
+                            <img src="../img/jet_mover.jpg" alt="Jet Mover" class="bus-image">
                             <div class="bus-details">
                                 <h4>Jet Mover</h4>
                                 <div class="departure-time">
