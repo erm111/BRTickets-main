@@ -19,6 +19,7 @@ $tickets = $stmt->fetchAll();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,6 +88,7 @@ $tickets = $stmt->fetchAll();
         }
     </style>
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
@@ -126,7 +128,7 @@ $tickets = $stmt->fetchAll();
                     No booking history found. Ready to plan your first trip?
                 </div>
             <?php else: ?>
-                <?php foreach ($tickets as $ticket): 
+                <?php foreach ($tickets as $ticket):
                     $travelDate = new DateTime($ticket['travel_date']);
                     $today = new DateTime();
                     $interval = $today->diff($travelDate);
@@ -162,8 +164,9 @@ $tickets = $stmt->fetchAll();
                                 </div>
                                 <div class="detail-item">
                                     <small>Bus Type</small>
-                                    <div><?php echo ucfirst($ticket['bus_type']); ?></div>
+                                    <div><?php echo $ticket['bus_type'] === 'hiance' ? 'Toyota Hiance' : 'Jet Mover'; ?></div>
                                 </div>
+
                                 <div class="detail-item">
                                     <small>Seats</small>
                                     <div><?php echo implode(', ', json_decode($ticket['seat_numbers'])); ?></div>
@@ -183,4 +186,5 @@ $tickets = $stmt->fetchAll();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="user.js"></script>
 </body>
+
 </html>

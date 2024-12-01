@@ -1,102 +1,88 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Retrieve booking details from session storage
+    // Get booking details from session storage
     const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
-    
     if (bookingDetails) {
-        // Display trip details
         document.getElementById('departureDetails').textContent = bookingDetails.departure;
         document.getElementById('arrivalDetails').textContent = bookingDetails.arrival;
-        document.getElementById('dateDetails').textContent = new Date(bookingDetails.date).toLocaleDateString();
-        document.getElementById('seatsDetails').textContent = bookingDetails.seats;
-        
-        if (bookingDetails.luggage) {
-            document.getElementById('luggageDetails').innerHTML = '<i class="fas fa-suitcase"></i> Luggage included';
-        }
-
-        // Calculate prices
-        const luggageFee = bookingDetails.luggage ? 5000 : 0;
-        const numSeats = parseInt(bookingDetails.seats);
-        
-        // Hiance total
-        const hianceTotal = (23000 * numSeats) + luggageFee;
-        document.getElementById('hianceTotal').textContent = `Total: ₦${hianceTotal.toLocaleString()}`;
-        
-        // Jet Mover total
-        const jetTotal = (25000 * numSeats) + luggageFee;
-        document.getElementById('jetTotal').textContent = `Total: ₦${jetTotal.toLocaleString()}`;
+        document.getElementById('departureDate').textContent = new Date(bookingDetails.date).toLocaleDateString();
     }
 });
 
 function showSeatSelection(busType, totalSeats) {
+    // Update booking details with bus type
     const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
-    const requiredSeats = parseInt(bookingDetails.seats);
-    const modal = document.getElementById('seatModal');
-    const layout = document.querySelector('.bus-layout');
+    bookingDetails.busType = busType;
+    sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+
+    // Create seat layout
+    const seatLayout = document.createElement('div');
+    seatLayout.className = 'seat-layout';
     
-    // Clear previous layout
-    layout.innerHTML = '';
-    
-    // Generate seats
+    // Create seats
     for (let i = 1; i <= totalSeats; i++) {
         const seat = document.createElement('div');
         seat.className = 'seat';
-        seat.textContent = i;
-        seat.onclick = () => toggleSeat(seat, requiredSeats);
-        layout.appendChild(seat);
+        seat.dataset.seatNumber = i;
+        seat.innerHTML = i;
+        
+        seat.addEventListener('click', function() {
+            this.classList.toggle('selected');
+            updateSelectedSeats();
+        });
+        
+        seatLayout.appendChild(seat);
     }
     
-    document.getElementById('requiredSeats').textContent = requiredSeats;
-    document.getElementById('selectedCount').textContent = '0';
-    modal.style.display = 'block';
-}
-
-function toggleSeat(seat, requiredSeats) {
-    const selectedSeats = document.querySelectorAll('.seat.selected').length;
+    // Show seat selection container
+    const seatSelectionContainer = document.getElementById('seatSelection');
+    seatSelectionContainer.innerHTML = '';
+    seatSelectionContainer.appendChild(seatLayout);
+    seatSelectionContainer.style.display = 'block';
     
-    if (seat.classList.contains('selected')) {
-        seat.classList.remove('selected');
-    } else if (selectedSeats < requiredSeats) {
-        seat.classList.add('selected');
-    }
+    // Show luggage option
+    document.getElementById('luggageOption').style.display = 'block';
     
-    document.getElementById('selectedCount').textContent = 
-        document.querySelectorAll('.seat.selected').length;
+    // Show proceed button
+    document.getElementById('proceedButton').style.display = 'block';
 }
 
-function closeSeatModal() {
-    document.getElementById('seatModal').style.display = 'none';
-}
-
-// Sidebar toggle functionality
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('active');
-}
-
-// Close sidebar when clicking outside on mobile
-document.addEventListener('click', function(event) {
-    const sidebar = document.getElementById('sidebar');
-    const menuToggle = document.querySelector('.menu-toggle');
+function updateSelectedSeats() {
+    const selectedSeats = [];
+    document.querySelectorAll('.seat.selected').forEach(seat => {
+        selectedSeats.push(seat.dataset.seatNumber);
+    });
     
-    if (window.innerWidth <= 768) {
-        if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
-            sidebar.classList.remove('active');
-        }
-    }
-});
-
-document.getElementById('confirmSeats').onclick = function() {
-    const selectedSeats = document.querySelectorAll('.seat.selected').length;
+    // Store selected seats in session storage
+    sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
+    
+    // Update total amount
     const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
-    const requiredSeats = parseInt(bookingDetails.seats);
+    const basePrice = bookingDetails.busType === 'hiance' ? 23000 : 25000;
+    const luggageChecked = document.getElementById('luggageCheckbox').checked;
+    const luggageFee = luggageChecked ? 5000 : 0;
     
-    if (selectedSeats === requiredSeats) {
-        const selectedSeatNumbers = Array.from(document.querySelectorAll('.seat.selected'))
-            .map(seat => seat.textContent);
-        sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeatNumbers));
-        closeSeatModal();
-        window.location.href = 'ticket_processing.php';
-    } else {
-        alert(`Please select exactly ${requiredSeats} seats`);
+    const totalAmount = (basePrice * selectedSeats.length) + luggageFee;
+    document.getElementById('totalAmount').textContent = `₦${totalAmount.toLocaleString()}`;
+}
+
+function handleLuggageChange() {
+    const luggageChecked = document.getElementById('luggageCheckbox').checked;
+    const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
+    bookingDetails.luggage = luggageChecked;
+    sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+    updateSelectedSeats();
+}
+
+function proceedToBooking() {
+    const selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats') || '[]');
+    if (selectedSeats.length === 0) {
+        alert('Please select at least one seat');
+        return;
     }
-};
+    
+    window.location.href = 'ticket_processing.php';
+}
+
+// Add event listeners
+document.getElementById('luggageCheckbox')?.addEventListener('change', handleLuggageChange);
+document.getElementById('proceedButton')?.addEventListener('click', proceedToBooking);
