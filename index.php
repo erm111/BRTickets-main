@@ -222,7 +222,7 @@
                             <div class="row g-5">
                                 <div class="col-lg-6 fadeInLeft animated" data-animation="fadeInLeft" data-delay="1s" style="animation-delay: 1s;">
                                     <div class="bg-secondary rounded p-5">
-                                        <h4 class="text-white mb-4">CONTINUE CAR RESERVATION</h4>
+                                        <h4 class="text-white mb-4">Book Your BRT Reservatiom</h4>
                                         <form>
                                             <div class="row g-3">
                                                 <div class="col-12">

@@ -7,19 +7,22 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Define Nigerian states
-$states = [
-    'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno',
-    'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa',
-    'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger',
-    'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara'
+// Define Lagos BRT/Bus stations
+$stations = [
+    'Obalende', 'Lekki Phase 1', 'Ajah', 'Ikoyi (Falomo)', 'Maroko', 'Sandfill',
+    'Bonny Camp', 'Ozumba Mbadiwe', 'Jakande', 'Ojuelegba',
+    'Surulere (National Stadium, Barracks, Shitta)', 'Yaba (Tejuosho, Akoka)',
+    'Ikeja (Under Bridge, Allen Avenue, Maryland)', 'Ojota', 'Ketu', 'Mile 12',
+    'Oshodi (Oshodi Oke, Oshodi Isale)', 'Mushin (Idi Oro, Palm Avenue)',
+    'Cele Bus Stop', 'Isolo', 'Ilasa', 'Iyana-Iba', 'Mile 2', 'Okokomaiko',
+    'Festac', 'Trade Fair Complex', 'Alaba Rago', 'Agbara', 'Ikorodu Garage',
+    'Agric', 'Ogolonto', 'Itowolo', 'Majidun', 'Agege (Pen Cinema)', 'Dopemu',
+    'Iyana-Ipaja', 'Abule Egba', 'Ile-Epo', 'Egbeda', 'Ijegun', 'Ipaja',
+    'Alaba International Market', 'Wharf Road', 'Tin Can', 'Coconut',
+    'Berger Yard', 'Epe Roundabout', 'Eleko Junction', 'Ojodu Berger',
+    'Sango-Ota', 'Ikotun', 'Egbe', 'Bariga', 'Gbagada'
 ];
 
-// Note: In a production environment, you would:
-// 1. Use a routing API (Google Maps, OpenStreetMap)
-// 2. Have a database of known routes
-// 3. Implement proper distance calculations
-// 4. Consider road conditions and traffic data
 ?>
 
 <!DOCTYPE html>
@@ -55,7 +58,7 @@ $states = [
             margin: 1rem 0;
         }
 
-        .route-state {
+        .route-station {
             background: #e3f2fd;
             padding: 0.5rem 1rem;
             border-radius: 20px;
@@ -73,7 +76,12 @@ $states = [
             background: white;
             border-radius: 8px;
         }
+
+        .select2-container {
+            width: 100% !important;
+        }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <body>
     <!-- Sidebar -->
@@ -91,10 +99,10 @@ $states = [
             <a href="suggest_route.php" class="menu-item">
                 <i class="fas fa-route"></i> Suggest Route
             </a>
-            <a href="booking_history.php" class="menu-item">
+            <a href="booking_history.php" class="menu-item active">
                 <i class="fas fa-history"></i> Booking History
             </a>
-            <a href="settings.php" class="menu-item active">
+            <a href="settings.php" class="menu-item">
                 <i class="fas fa-cog"></i> Settings
             </a>
         </div>
@@ -113,20 +121,20 @@ $states = [
                 <form id="routeForm">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label>Departure State</label>
-                            <select class="form-control" id="departureState" required>
-                                <option value="">Select departure state</option>
-                                <?php foreach ($states as $state): ?>
-                                    <option value="<?php echo $state; ?>"><?php echo $state; ?></option>
+                            <label>Departure Station</label>
+                            <select class="form-control station-select" id="departureStation" required>
+                                <option value="">Select departure station</option>
+                                <?php foreach ($stations as $station): ?>
+                                    <option value="<?php echo $station; ?>"><?php echo $station; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label>Arrival State</label>
-                            <select class="form-control" id="arrivalState" required>
-                                <option value="">Select arrival state</option>
-                                <?php foreach ($states as $state): ?>
-                                    <option value="<?php echo $state; ?>"><?php echo $state; ?></option>
+                            <label>Arrival Station</label>
+                            <select class="form-control station-select" id="arrivalStation" required>
+                                <option value="">Select arrival station</option>
+                                <?php foreach ($stations as $station): ?>
+                                    <option value="<?php echo $station; ?>"><?php echo $station; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -141,85 +149,9 @@ $states = [
         </div>
     </div>
 
-    <script>
-        // Simplified route finding algorithm
-        // In production, this would be replaced with API calls
-        const routeMap = {
-            // Sample predefined routes between major cities
-            'Lagos': {
-                'Abuja': ['Lagos', 'Ogun', 'Oyo', 'Kwara', 'Niger', 'FCT'],
-                'Kano': ['Lagos', 'Ogun', 'Oyo', 'Kwara', 'Niger', 'Kaduna', 'Kano']
-            },
-            'Enugu': {
-                'Lagos': ['Enugu', 'Anambra', 'Delta', 'Edo', 'Ondo', 'Ogun', 'Lagos'],
-                'Port Harcourt': ['Enugu', 'Imo', 'Rivers']
-            }
-            // Add more predefined routes
-        };
-
-        document.getElementById('routeForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const departure = document.getElementById('departureState').value;
-            const arrival = document.getElementById('arrivalState').value;
-
-            // Show route suggestion
-            const suggestionDiv = document.getElementById('routeSuggestion');
-            suggestionDiv.style.display = 'block';
-
-            // In a real implementation, this would make an API call
-            // For now, we'll generate a simple route
-            const route = generateRoute(departure, arrival);
-            displayRoute(route);
-        });
-
-        function generateRoute(departure, arrival) {
-            // This is a simplified route generation
-            // In production, use routing API or database
-            return {
-                states: [departure, ...getIntermediateStates(departure, arrival), arrival],
-                distance: calculateApproximateDistance(departure, arrival),
-                duration: calculateApproximateDuration(departure, arrival),
-                roadCondition: 'Good'
-            };
-        }
-
-        function getIntermediateStates(departure, arrival) {
-            // Simplified intermediate states logic
-            // In production, use actual geographical data
-            return [];
-        }
-
-        function displayRoute(route) {
-            const html = `
-                <h4>Suggested Route</h4>
-                <div class="route-path">
-                    ${route.states.map(state => `
-                        <span class="route-state">${state}</span>
-                        ${state !== route.states[route.states.length - 1] ? 
-                            '<i class="fas fa-arrow-right route-arrow"></i>' : ''}
-                    `).join('')}
-                </div>
-                <div class="route-details">
-                    <p><i class="fas fa-road"></i> Estimated Distance: ${route.distance} km</p>
-                    <p><i class="fas fa-clock"></i> Estimated Duration: ${route.duration} hours</p>
-                    <p><i class="fas fa-info-circle"></i> Road Condition: ${route.roadCondition}</p>
-                </div>
-            `;
-            document.getElementById('routeSuggestion').innerHTML = html;
-        }
-
-        function calculateApproximateDistance(departure, arrival) {
-            // In production, use actual distance calculations
-            return Math.floor(Math.random() * 500) + 100;
-        }
-
-        function calculateApproximateDuration(departure, arrival) {
-            // In production, use actual duration calculations
-            return Math.floor(Math.random() * 8) + 2;
-        }
-    </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="suggest_route.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="user.js"></script>
 </body>
 </html>
