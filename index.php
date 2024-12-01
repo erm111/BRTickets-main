@@ -94,19 +94,17 @@
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav mx-auto py-0">
                         <a href="index.php" class="nav-item nav-link active">Home</a>
-                        <a href="about.html" class="nav-item nav-link">About</a>
-                        <a href="service.html" class="nav-item nav-link">Service</a>
-                        <a href="blog.html" class="nav-item nav-link">Blog</a>
-                        <a href="contact.html" class="nav-item nav-link">Contact Us</a>
+                        <a href="about.php" class="nav-item nav-link">About</a>
+                        <a href="service.php" class="nav-item nav-link">Service</a>
+                        <a href="blog.php" class="nav-item nav-link">Blog</a>
+                        <a href="contact.php" class="nav-item nav-link">Contact Us</a>
 
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
                             <div class="dropdown-menu m-0">
-                                <a href="team.html" class="dropdown-item">Our Team</a>
-                                <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                                <!-- <a href="team.html" class="dropdown-item">Customer Support</a> -->
-                                <a href="faq.html" class="dropdown-item">FAQs</a>
-                                <!-- <a href="404.html" class="dropdown-item">News & Updates</a> -->
+                                <a href="team.php" class="dropdown-item">Our Team</a>
+                                <a href="testimonial.php" class="dropdown-item">Testimonial</a>
+                                <a href="faq.php" class="dropdown-item">FAQs</a>
                             </div>
                         </div>
                     </div>
