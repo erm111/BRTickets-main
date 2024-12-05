@@ -1,24 +1,39 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Get booking details from session storage
     const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
     if (bookingDetails) {
         document.getElementById('departureDetails').textContent = bookingDetails.departure;
         document.getElementById('arrivalDetails').textContent = bookingDetails.arrival;
-        document.getElementById('departureDate').textContent = new Date(bookingDetails.date).toLocaleDateString();
+        document.getElementById('dateDetails').textContent = new Date(bookingDetails.date).toLocaleDateString();
+        document.getElementById('seatsDetails').textContent = bookingDetails.seats;
+        document.getElementById('luggageDetails').textContent = bookingDetails.luggage ? 'With Luggage' : 'No Luggage';
     }
+
+    const busButtons = document.querySelectorAll('.select-bus-btn');
+    busButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const busType = this.dataset.busType;
+            const totalSeats = parseInt(this.dataset.seats);
+            showSeatSelection(busType, totalSeats);
+        });
+    });
+
+    document.getElementById('confirmSeats').addEventListener('click', confirmSeatSelection);
+    document.getElementById('proceedButton').addEventListener('click', proceedToPayment);
 });
 
 function showSeatSelection(busType, totalSeats) {
-    // Update booking details with bus type
     const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
+    const requiredSeats = parseInt(bookingDetails.seats);
+    
+    const modal = document.getElementById('seatModal');
+    modal.style.display = 'block';
+
     bookingDetails.busType = busType;
     sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
 
-    // Create seat layout
     const seatLayout = document.createElement('div');
     seatLayout.className = 'seat-layout';
     
-    // Create seats
     for (let i = 1; i <= totalSeats; i++) {
         const seat = document.createElement('div');
         seat.className = 'seat';
@@ -26,6 +41,11 @@ function showSeatSelection(busType, totalSeats) {
         seat.innerHTML = i;
         
         seat.addEventListener('click', function() {
+            const currentSelected = document.querySelectorAll('.seat.selected').length;
+            if (!this.classList.contains('selected') && currentSelected >= requiredSeats) {
+                alert(`You can only select ${requiredSeats} seats`);
+                return;
+            }
             this.classList.toggle('selected');
             updateSelectedSeats();
         });
@@ -33,17 +53,13 @@ function showSeatSelection(busType, totalSeats) {
         seatLayout.appendChild(seat);
     }
     
-    // Show seat selection container
-    const seatSelectionContainer = document.getElementById('seatSelection');
-    seatSelectionContainer.innerHTML = '';
-    seatSelectionContainer.appendChild(seatLayout);
-    seatSelectionContainer.style.display = 'block';
-    
-    // Show luggage option
-    document.getElementById('luggageOption').style.display = 'block';
-    
-    // Show proceed button
-    document.getElementById('proceedButton').style.display = 'block';
+    const busLayout = document.querySelector('.bus-layout');
+    busLayout.innerHTML = '';
+    busLayout.appendChild(seatLayout);
+
+    document.getElementById('requiredSeats').textContent = requiredSeats;
+    document.getElementById('selectedCount').textContent = '0';
+    updateSelectedSeats();
 }
 
 function updateSelectedSeats() {
@@ -52,37 +68,44 @@ function updateSelectedSeats() {
         selectedSeats.push(seat.dataset.seatNumber);
     });
     
-    // Store selected seats in session storage
+    document.getElementById('selectedCount').textContent = selectedSeats.length;
     sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
     
-    // Update total amount
     const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
     const basePrice = bookingDetails.busType === 'hiance' ? 23000 : 25000;
-    const luggageChecked = document.getElementById('luggageCheckbox').checked;
-    const luggageFee = luggageChecked ? 5000 : 0;
+    const luggageFee = bookingDetails.luggage ? 5000 : 0;
     
     const totalAmount = (basePrice * selectedSeats.length) + luggageFee;
-    document.getElementById('totalAmount').textContent = `₦${totalAmount.toLocaleString()}`;
+    document.querySelector('.price-value').textContent = totalAmount.toLocaleString();
+    
+    const proceedButton = document.getElementById('proceedButton');
+    proceedButton.disabled = selectedSeats.length !== parseInt(bookingDetails.seats);
 }
 
-function handleLuggageChange() {
-    const luggageChecked = document.getElementById('luggageCheckbox').checked;
-    const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
-    bookingDetails.luggage = luggageChecked;
-    sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
-    updateSelectedSeats();
+function closeSeatModal() {
+    const modal = document.getElementById('seatModal');
+    modal.style.display = 'none';
 }
 
-function proceedToBooking() {
+function confirmSeatSelection() {
     const selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats') || '[]');
-    if (selectedSeats.length === 0) {
-        alert('Please select at least one seat');
+    const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
+    const requiredSeats = parseInt(bookingDetails.seats);
+
+    if (selectedSeats.length !== requiredSeats) {
+        alert(`Please select exactly ${requiredSeats} seats`);
         return;
     }
     
-    window.location.href = 'ticket_processing.php';
+    document.getElementById('seatsDetails').textContent = selectedSeats.length;
+    document.getElementById('proceedButton').disabled = false;
 }
 
-// Add event listeners
-document.getElementById('luggageCheckbox')?.addEventListener('change', handleLuggageChange);
-document.getElementById('proceedButton')?.addEventListener('click', proceedToBooking);
+function proceedToPayment() {
+    const selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats'));
+    const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
+    
+    if (selectedSeats && bookingDetails) {
+        window.location.href = 'ticket_processing.php';
+    }
+}

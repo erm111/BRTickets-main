@@ -80,13 +80,15 @@ document.getElementById('reservationForm').addEventListener('submit', function(e
   loaderContainer.style.display = 'flex';
 
   // Store form data in session storage
-  const formData = {
-      departure: document.getElementById('departureState').value,
-      arrival: document.getElementById('arrivalState').value,
-      date: document.getElementById('departureDate').value,
-      seats: document.getElementById('seatCount').value,
-      luggage: document.getElementById('luggageCheck').checked
-  };
+// In the form submission handler
+const formData = {
+  departure: document.getElementById('departureState').value,
+  arrival: document.getElementById('arrivalState').value,
+  date: document.getElementById('departureDate').value,
+  seats: document.getElementById('seatCount').value, 
+  luggage: document.getElementById('luggageCheck').checked
+};
+
 
   sessionStorage.setItem('bookingDetails', JSON.stringify(formData));
 

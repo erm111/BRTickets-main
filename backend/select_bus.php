@@ -2,7 +2,6 @@
 session_start();
 require_once 'dbconn.php';
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
     exit();
@@ -26,28 +25,29 @@ $fullName = $user['full_name'];
     <link rel="stylesheet" href="select_bus.css">
 </head>
 <body>
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h4>BRTickets</h4>
         </div>
         <div class="sidebar-menu">
-            <a href="#" class="menu-item">
+            <a href="user.php" class="menu-item">
                 <i class="fas fa-home"></i> Dashboard
             </a>
-            <a href="#" class="menu-item">
+            <a href="help_support.php" class="menu-item">
                 <i class="fas fa-headset"></i> Help and Support
             </a>
-            <a href="#" class="menu-item">
+            <a href="suggest_route.php" class="menu-item">
                 <i class="fas fa-route"></i> Suggest Route
             </a>
-            <a href="#" class="menu-item">
+            <a href="booking_history.php" class="menu-item">
+                <i class="fas fa-history"></i> Booking History
+            </a>
+            <a href="settings.php" class="menu-item">
                 <i class="fas fa-cog"></i> Settings
             </a>
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <div class="menu-toggle" onclick="toggleSidebar()">
             <i class="fas fa-bars"></i>
@@ -72,15 +72,14 @@ $fullName = $user['full_name'];
                     </div>
                     <div class="details mt-3">
                         <span id="dateDetails"></span> | 
-                        <span id="seatsDetails"></span> seats
-                        <span id="luggageDetails" class="ms-2"></span>
+                        <span id="seatsDetails"></span> seats |
+                        <span id="luggageDetails"></span>
                     </div>
                 </div>
             </div>
 
             <div class="bus-options">
                 <div class="row g-4">
-                    <!-- Hiance Option -->
                     <div class="col-md-6">
                         <div class="bus-card">
                             <img src="../img/jet_mover.jpg" alt="Toyota Hiance" class="bus-image">
@@ -94,12 +93,11 @@ $fullName = $user['full_name'];
                                     <h5>₦23,000 per seat</h5>
                                     <p class="total-price" id="hianceTotal"></p>
                                 </div>
-                                <button class="btn btn-primary w-100" onclick="showSeatSelection('hiance', 9)">Select Seats</button>
+                                <button  type= "button" class="btn btn-primary w-100 select-bus-btn" data-bus-type="hiance" data-seats="9">Select Seats</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Jet Mover Option -->
                     <div class="col-md-6">
                         <div class="bus-card">
                             <img src="../img/jet_mover.jpg" alt="Jet Mover" class="bus-image">
@@ -113,7 +111,7 @@ $fullName = $user['full_name'];
                                     <h5>₦25,000 per seat</h5>
                                     <p class="total-price" id="jetTotal"></p>
                                 </div>
-                                <button class="btn btn-primary w-100" onclick="showSeatSelection('jet', 13)">Select Seats</button>
+                                <button type="button" class="btn btn-primary w-100 select-bus-btn" data-bus-type="jet" data-seats="13">Select Seats</button>
                             </div>
                         </div>
                     </div>
@@ -121,28 +119,33 @@ $fullName = $user['full_name'];
             </div>
         </div>
     </div>
-
-    <!-- Seat Selection Modal -->
-    <div class="seat-selection-modal" id="seatModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Select Your Seats</h3>
-                <button type="button" class="close" onclick="closeSeatModal()">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="bus-layout">
-                <!-- Seats will be generated dynamically -->
-            </div>
+<!-- Replace the existing modal div with this one -->
+<div class="seat-selection-modal" id="seatModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Select Your Seats</h3>
+            <button type="button" class="close" onclick="closeSeatModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="bus-layout"></div>
             <div class="selected-seats-info">
-                <p>Selected: <span id="selectedCount">0</span> / <span id="requiredSeats">0</span></p>
+                <p>
+                    Selected: <span id="selectedCount">0</span> / <span id="requiredSeats">0</span>
+                </p>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeSeatModal()">Cancel</button>
-                <button class="btn btn-primary" id="confirmSeats">Confirm Selection</button>
+            <div id="totalAmount">
+                Total: ₦<span class="price-value">0</span>
             </div>
         </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeSeatModal()">Cancel</button>
+            <button class="btn btn-primary" id="confirmSeats">Confirm</button>
+            <button class="btn btn-success" id="proceedButton" disabled>Proceed</button>
+        </div>
     </div>
+</div>
+
+
 
     <script src="select_bus.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
