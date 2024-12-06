@@ -1,11 +1,13 @@
 <?php
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 require 'vendor/autoload.php';
 require_once 'dbconn.php';
 
-function sendTicketEmail($userId, $ticketDetails) {
+function sendTicketEmail($userId, $ticketDetails)
+{
     $mail = new PHPMailer(true);
 
     try {
@@ -18,21 +20,22 @@ function sendTicketEmail($userId, $ticketDetails) {
 
         // Server settings
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';  // Replace with your SMTP host
+        $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'uzomannanyere@gmail.com'; // Replace with your email
-        $mail->Password = 'ynuwxcjgkudqqgxe'; // Replace with your app password
+        $mail->Username = 'uzomannanyere@gmail.com';
+        $mail->Password = 'ynuwxcjgkudqqgxe';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
         // Recipients
-        $mail->setFrom('your-email@gmail.com', 'BRTickets');
+        $mail->setFrom('uzomannanyere@gmail.com', 'BRTickets');
+
         $mail->addAddress($userEmail);
 
         // Content
         $mail->isHTML(true);
         $mail->Subject = 'Your BRTickets Booking Confirmation';
-        
+
         // Create email body
         $emailBody = "
             <h2>Booking Confirmation</h2>
@@ -50,7 +53,7 @@ function sendTicketEmail($userId, $ticketDetails) {
                 <p><strong>Phone:</strong> {$ticketDetails['next_of_kin_phone']}</p>
             </div>
         ";
-        
+
         $mail->Body = $emailBody;
 
         $mail->send();
@@ -63,14 +66,14 @@ function sendTicketEmail($userId, $ticketDetails) {
 // Add this at the end of send_mail.php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
-    
+
     // Get the latest ticket details from database
     $stmt = $pdo->prepare("SELECT * FROM tickets WHERE user_id = ? ORDER BY id DESC LIMIT 1");
     $stmt->execute([$_SESSION['user_id']]);
     $ticketDetails = $stmt->fetch();
 
     $emailSent = sendTicketEmail($_SESSION['user_id'], $ticketDetails);
-    
+
     header('Content-Type: application/json');
     echo json_encode(['success' => $emailSent]);
 }
