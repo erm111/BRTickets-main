@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -76,11 +77,17 @@ if (!isset($_SESSION['user_id'])) {
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="main-content">
         <div class="content-area">
@@ -135,7 +142,7 @@ if (!isset($_SESSION['user_id'])) {
         document.addEventListener('DOMContentLoaded', function() {
             const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
             const selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats'));
-            
+
             // Calculate total amount with updated prices
             const basePrice = bookingDetails.busType === 'hiance' ? 7500 : 10000;
             const luggageFee = bookingDetails.luggage ? 5000 : 0;
@@ -164,7 +171,7 @@ if (!isset($_SESSION['user_id'])) {
         // Expiry date validation
         document.getElementById('expiryDate').addEventListener('input', function(e) {
             let input = this.value.replace(/\D/g, '');
-            
+
             // Format MM/YY
             if (input.length > 2) {
                 this.value = input.substring(0, 2) + '/' + input.substring(2);
@@ -186,16 +193,16 @@ if (!isset($_SESSION['user_id'])) {
         // Form submission validation
         document.getElementById('paymentForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             // Get current date
             const today = new Date();
             const currentMonth = today.getMonth() + 1;
             const currentYear = today.getFullYear() % 100;
-            
+
             // Get expiry date values
             const expiryDate = document.getElementById('expiryDate').value;
             const [expMonth, expYear] = expiryDate.split('/').map(num => parseInt(num));
-            
+
             // Validate expiry date
             if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
                 alert('Card has expired. Please use a valid card.');
@@ -206,18 +213,37 @@ if (!isset($_SESSION['user_id'])) {
             const overlay = document.querySelector('.processing-overlay');
             const loader = document.querySelector('.loader');
             const checkmark = document.querySelector('.success-checkmark');
-            
+
             overlay.style.display = 'flex';
-            
+
             setTimeout(() => {
                 loader.style.display = 'none';
                 checkmark.style.display = 'block';
-                
+
                 setTimeout(() => {
                     window.location.href = 'print_ticket.php';
                 }, 1500);
             }, 3000);
         });
+        // Inside the form submission handler, after successful payment
+        fetch('send_mail.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bookingDetails: bookingDetails,
+                    selectedSeats: selectedSeats
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Email sent successfully');
+                }
+            })
+            .catch(error => console.error('Error:', error));
     </script>
 </body>
+
 </html>
