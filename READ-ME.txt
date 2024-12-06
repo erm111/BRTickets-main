@@ -1,3 +1,6 @@
 Delight Opara
 oparatickets@gmail.com
 tickets12
+
+
+composer require phpmailer/phpmailer

@@ -139,7 +139,7 @@ $fullName = $user['full_name'];
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeSeatModal()">Cancel</button>
-            <!-- <button class="btn btn-primary" id="confirmSeats">Confirm</button> -->
+            <button class="btn btn-primary" id="confirmSeats">Confirm</button>
             <button class="btn btn-success" id="proceedButton" disabled>Proceed</button>
         </div>
     </div>

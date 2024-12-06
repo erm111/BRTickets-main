@@ -106,7 +106,7 @@ $fullName = $user['full_name'];
                     <h5>Booking Summary</h5>
                     <p><strong>Route:</strong> ${bookingDetails.departure} to ${bookingDetails.arrival}</p>
                     <p><strong>Date:</strong> ${new Date(bookingDetails.date).toLocaleDateString()}</p>
-                    <p><strong>Seats:</strong> ${selectedSeats.join(', ')}</p>
+                    <p><strong>Seat No(s):</strong> ${selectedSeats.join(', ')}</p>
                     <p><strong>Luggage:</strong> ${bookingDetails.luggage ? 'Yes' : 'No'}</p>
                 `;
                 document.querySelector('.booking-summary').innerHTML = summaryHTML;

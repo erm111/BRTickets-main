@@ -96,20 +96,20 @@ if (!isset($_SESSION['user_id'])) {
                 <form id="paymentForm">
                     <div class="form-group">
                         <label>Card Number</label>
-                        <input type="text" class="form-control card-input" maxlength="16" placeholder="1234 5678 9012 3456" required>
+                        <input type="text" id="cardNumber" class="form-control card-input" maxlength="16" placeholder="1234 5678 9012 3456" required pattern="\d*">
                     </div>
 
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Expiry Date</label>
-                                <input type="text" class="form-control card-input" placeholder="MM/YY" maxlength="5" required>
+                                <input type="text" id="expiryDate" class="form-control card-input" placeholder="MM/YY" maxlength="5" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>CVV</label>
-                                <input type="text" class="form-control card-input" maxlength="3" placeholder="123" required>
+                                <input type="text" id="cvv" class="form-control card-input" maxlength="3" placeholder="123" required pattern="\d*">
                             </div>
                         </div>
                     </div>
@@ -136,8 +136,8 @@ if (!isset($_SESSION['user_id'])) {
             const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
             const selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats'));
             
-            // Calculate total amount
-            const basePrice = bookingDetails.busType === 'hiance' ? 23000 : 25000;
+            // Calculate total amount with updated prices
+            const basePrice = bookingDetails.busType === 'hiance' ? 7500 : 10000;
             const luggageFee = bookingDetails.luggage ? 5000 : 0;
             const totalAmount = (basePrice * selectedSeats.length) + luggageFee;
 
@@ -151,8 +151,58 @@ if (!isset($_SESSION['user_id'])) {
             document.querySelector('.payment-summary').innerHTML = summaryHTML;
         });
 
+        // Card number validation - only numbers allowed
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // CVV validation - only numbers allowed
+        document.getElementById('cvv').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // Expiry date validation
+        document.getElementById('expiryDate').addEventListener('input', function(e) {
+            let input = this.value.replace(/\D/g, '');
+            
+            // Format MM/YY
+            if (input.length > 2) {
+                this.value = input.substring(0, 2) + '/' + input.substring(2);
+            } else {
+                this.value = input;
+            }
+
+            // Validate month (01-12)
+            if (input.length >= 2) {
+                let month = parseInt(input.substring(0, 2));
+                if (month < 1 || month > 12) {
+                    this.setCustomValidity('Please enter a valid month (01-12)');
+                } else {
+                    this.setCustomValidity('');
+                }
+            }
+        });
+
+        // Form submission validation
         document.getElementById('paymentForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Get current date
+            const today = new Date();
+            const currentMonth = today.getMonth() + 1;
+            const currentYear = today.getFullYear() % 100;
+            
+            // Get expiry date values
+            const expiryDate = document.getElementById('expiryDate').value;
+            const [expMonth, expYear] = expiryDate.split('/').map(num => parseInt(num));
+            
+            // Validate expiry date
+            if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+                alert('Card has expired. Please use a valid card.');
+                return;
+            }
+
+            // If validation passes, show processing overlay
             const overlay = document.querySelector('.processing-overlay');
             const loader = document.querySelector('.loader');
             const checkmark = document.querySelector('.success-checkmark');
