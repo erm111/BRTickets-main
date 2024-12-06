@@ -72,8 +72,8 @@ function updateSelectedSeats() {
     sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
     
     const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
-    const basePrice = bookingDetails.busType === 'hiance' ? 23000 : 25000;
-    const luggageFee = bookingDetails.luggage ? 5000 : 0;
+    const basePrice = bookingDetails.busType === 'hiance' ? 7500 : 10000;
+    const luggageFee = bookingDetails.luggage ? 2000 : 0;
     
     const totalAmount = (basePrice * selectedSeats.length) + luggageFee;
     document.querySelector('.price-value').textContent = totalAmount.toLocaleString();
@@ -81,6 +81,7 @@ function updateSelectedSeats() {
     const proceedButton = document.getElementById('proceedButton');
     proceedButton.disabled = selectedSeats.length !== parseInt(bookingDetails.seats);
 }
+
 
 function closeSeatModal() {
     const modal = document.getElementById('seatModal');
