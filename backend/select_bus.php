@@ -93,7 +93,7 @@ $fullName = $user['full_name'];
                                     <h5>₦7,500 per seat</h5>
                                     <p class="total-price" id="hianceTotal"></p>
                                 </div>
-                                <button  type= "button" class="btn btn-primary w-100 select-bus-btn" data-bus-type="hiance" data-seats="9">Select Seats</button>
+                                <button  type= "button" class="btn btn-primary w-100 select-bus-btn" data-bus-type="hiance" data-seats="9">Select Seat No(s).</button>
                             </div>
                         </div>
                     </div>
@@ -111,7 +111,7 @@ $fullName = $user['full_name'];
                                     <h5>₦10,000 per seat</h5>
                                     <p class="total-price" id="jetTotal"></p>
                                 </div>
-                                <button type="button" class="btn btn-primary w-100 select-bus-btn" data-bus-type="jet" data-seats="13">Select Seats</button>
+                                <button type="button" class="btn btn-primary w-100 select-bus-btn" data-bus-type="jet" data-seats="13">Select Seat No(s).</button>
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,7 @@ $fullName = $user['full_name'];
 <div class="seat-selection-modal" id="seatModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Select Your Seats</h3>
+            <h3>Select Your Seat No(s)</h3>
             <button type="button" class="close" onclick="closeSeatModal()">&times;</button>
         </div>
         <div class="modal-body">
@@ -139,7 +139,7 @@ $fullName = $user['full_name'];
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeSeatModal()">Cancel</button>
-            <button class="btn btn-primary" id="confirmSeats">Confirm</button>
+            <!-- <button class="btn btn-primary" id="confirmSeats">Confirm</button> -->
             <button class="btn btn-success" id="proceedButton" disabled>Proceed</button>
         </div>
     </div>
