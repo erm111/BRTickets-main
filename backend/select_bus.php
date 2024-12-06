@@ -90,7 +90,7 @@ $fullName = $user['full_name'];
                                 </div>
                                 <p class="seats-available">9 seats available</p>
                                 <div class="price-details">
-                                    <h5>₦23,000 per seat</h5>
+                                    <h5>₦7,500 per seat</h5>
                                     <p class="total-price" id="hianceTotal"></p>
                                 </div>
                                 <button  type= "button" class="btn btn-primary w-100 select-bus-btn" data-bus-type="hiance" data-seats="9">Select Seats</button>
@@ -108,7 +108,7 @@ $fullName = $user['full_name'];
                                 </div>
                                 <p class="seats-available">13 seats available</p>
                                 <div class="price-details">
-                                    <h5>₦25,000 per seat</h5>
+                                    <h5>₦10,000 per seat</h5>
                                     <p class="total-price" id="jetTotal"></p>
                                 </div>
                                 <button type="button" class="btn btn-primary w-100 select-bus-btn" data-bus-type="jet" data-seats="13">Select Seats</button>
