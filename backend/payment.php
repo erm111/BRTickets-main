@@ -153,7 +153,7 @@ if (!isset($_SESSION['user_id'])) {
                 <h5>Payment Summary</h5>
                 <p><strong>Amount:</strong> ₦${totalAmount.toLocaleString()}</p>
                 <p><strong>Route:</strong> ${bookingDetails.departure} to ${bookingDetails.arrival}</p>
-                <p><strong>Seats:</strong> ${selectedSeats.join(', ')}</p>
+                <p><strong>Seat No(s):</strong> ${selectedSeats.join(', ')}</p>
             `;
             document.querySelector('.payment-summary').innerHTML = summaryHTML;
         });
